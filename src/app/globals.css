@@ -1,26 +1,99 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* --- LIGHT MODE: "Classic Library" --- */
+  --background: #f8fafc; /* Soft White/Grey */
+  --foreground: #0f172a; /* Deep Slate Text */
+  --card: #ffffff; /* Pure White Cards */
+  --card-border: #e2e8f0; /* Light Border */
+
+  /* Brand Colors (Light) */
+  --primary: #6366f1; /* Indigo (Stronger for Light Mode) */
+  --secondary: #0ea5e9; /* Sky Blue */
+  --accent: #8b5cf6; /* Vivid Purple */
+  --muted: #64748b; /* Muted Slate Text */
+
+  /* Modern Font Pairing */
+  --font-interface: "Inter", system-ui, sans-serif;
+  --font-book-title: "Playfair Display", serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* --- DARK MODE: "Modern Glow" --- */
+    --background: #0f111a; /* Deep Navy-Black */
+    --foreground: #f8fafc; /* Off-White Text */
+    --card: #161927; /* Deep Slate Card */
+    --card-border: #2d334d; /* Subtle Dark Border */
+
+    /* Brand Colors (Dark - Glowing) */
+    --primary: #a78bfa; /* Digital Lavender (Your Trend Color) */
+    --secondary: #3b82f6; /* Corporate Blue (Jio Style) */
+    --accent: #f472b6; /* Hot Pink (Glow Accent) */
+    --muted: #94a3b8; /* Blue-Grey Muted Text */
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Custom Font Utilities */
+  --font-sans: var(--font-interface);
+  --font-serif: var(--font-book-title);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-interface);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Helper Class for Book Titles */
+.book-title {
+  font-family: var(--font-book-title);
+}
+
+/* Glass Effect Utility */
+.glass {
+  background: rgba(var(--card), 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+}
+
+/* Hide Scrollbar Globally but keep functionality */
+@layer base {
+  html,
+  body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  ::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Glass Effect Overlay for Dark/Light Mode */
+.glass-panel {
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+}
+
+/* Custom Selection Color using your Accent */
+::selection {
+  background-color: var(--accent);
+  color: white;
 }
