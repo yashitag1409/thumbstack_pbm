@@ -14,12 +14,29 @@ module.exports.addBook = async (bookData) => {
 };
 
 // 2. Get All Books
-module.exports.getAllBooks = async () => {
-  try {
-    console.log("getAllBooks");
+// utils/apis/booksApi.js
 
-    const { data } = await axiosInstance.get("/books/all");
-    return data.data;
+module.exports.getAllBooks = async ({
+  page = 1,
+  limit = 10,
+  category,
+  status,
+  isFavorite,
+  search,
+} = {}) => {
+  try {
+    const { data } = await axiosInstance.get("/books/all", {
+      params: {
+        page,
+        limit,
+        category,
+        status,
+        isFavorite,
+        search,
+      },
+    });
+
+    return data;
   } catch (error) {
     console.error("Get All Books Error:", error);
     throw error;
@@ -41,7 +58,10 @@ module.exports.getGroupedBooks = async () => {
 module.exports.getSingleBook = async (id) => {
   try {
     const { data } = await axiosInstance.get(`/books/${id}`);
-    return data;
+
+    console.log("data from get single book 📷📷", data);
+
+    return data.data;
   } catch (error) {
     console.error("Get Single Book Error:", error);
     throw error;

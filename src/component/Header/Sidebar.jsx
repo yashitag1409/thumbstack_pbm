@@ -30,9 +30,7 @@ const Sidebar = ({ openAuthModal }) => {
 
   const menuItems = [
     { name: "Home", icon: <Home size={24} />, path: "/" },
-    { name: "Search", icon: <Search size={24} />, path: "/search" },
-    { name: "Favorites", icon: <Heart size={24} />, path: "/favourites" },
-    { name: "All Books", icon: <Book size={24} />, path: "/books" },
+    { name: "Collection", icon: <Book size={24} />, path: "/books" },
     { name: "Categories", icon: <Library size={24} />, path: "/categories" },
     { name: "Authors", icon: <BookUser size={24} />, path: "/authors" },
   ];

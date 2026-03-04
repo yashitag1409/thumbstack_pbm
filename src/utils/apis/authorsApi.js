@@ -22,11 +22,13 @@ export const addAuthor = async (authorData) => {
  * 2. Get All Authors
  * Fetches the list of all authors in the vault
  */
-export const getAllAuthors = async () => {
+export const getAllAuthors = async (params = {}) => {
   try {
-    const { data } = await axiosInstance.get("/authors/all");
+    const { data } = await axiosInstance.get("/authors/all", { params });
+
     console.log("getAllAuthors", data);
-    return data.data;
+
+    return data;
   } catch (error) {
     console.error("Get All Authors Error:", error);
     throw error;

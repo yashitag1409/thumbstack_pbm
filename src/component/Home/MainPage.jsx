@@ -8,6 +8,9 @@ import SectionSlider from "./SectionSlider";
 import { getAllBooks, getFavouriteBooks } from "@/utils/apis/booksApi";
 import { getAllCategories } from "@/utils/apis/categoriesApi";
 import { getAllAuthors } from "@/utils/apis/authorsApi";
+import AddEditBook from "../Books/AddEditBooks";
+import AddEditCategory from "../Categories/AddEditCategory";
+import AddEditAuthor from "../Authors/AddEditAuthor";
 
 const MainPage = ({ openAuthModal }) => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -17,6 +20,11 @@ const MainPage = ({ openAuthModal }) => {
   const [allBooks, setAllBooks] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [allAuthors, setAllAuthors] = useState([]);
+  const [modalVisible, setModalVisible] = useState({
+    type: "",
+    visible: false,
+    data: null,
+  });
 
   // Mock effect to simulate API loading for skeleton states
   useEffect(() => {
@@ -122,6 +130,24 @@ const MainPage = ({ openAuthModal }) => {
         tag="favourite"
         emptyMessage="No favorite books available."
         data={allFavBooks}
+        onEditBook={(item) =>
+          setModalVisible({ type: "edit_book", visible: true, data: item })
+        }
+        onDeleteBook={(item) =>
+          setModalVisible({
+            type: "delete_book",
+            visible: true,
+            data: item,
+          })
+        }
+        onAdd={() =>
+          setModalVisible({
+            visible: true,
+            type: "add_book",
+            data: null,
+          })
+        }
+        onToggleFavoriteBook={(item) => {}}
       />
 
       {/* 2. All Categories Section */}
@@ -132,6 +158,27 @@ const MainPage = ({ openAuthModal }) => {
         tag="categories"
         emptyMessage="No categories available."
         data={allCategories}
+        onEditCategory={(item) =>
+          setModalVisible({
+            type: "edit_category",
+            visible: true,
+            data: item,
+          })
+        }
+        onAdd={() =>
+          setModalVisible({
+            visible: true,
+            type: "add_category",
+            data: null,
+          })
+        }
+        onDeleteCategory={(item) =>
+          setModalVisible({
+            type: "delete_category",
+            visible: true,
+            data: item,
+          })
+        }
       />
 
       {/* 3. All Books Section */}
@@ -142,6 +189,28 @@ const MainPage = ({ openAuthModal }) => {
         tag="books"
         emptyMessage="No books added yet."
         data={allBooks}
+        onEditBook={(item) =>
+          setModalVisible({
+            type: "edit_book",
+            visible: true,
+            data: item,
+          })
+        }
+        onAdd={() =>
+          setModalVisible({
+            visible: true,
+            type: "add_book",
+            data: null,
+          })
+        }
+        onDeleteBook={(item) =>
+          setModalVisible({
+            type: "delete_book",
+            visible: true,
+            data: item,
+          })
+        }
+        onToggleFavoriteBook={(item) => {}}
       />
 
       {/* 4. All Authors Section */}
@@ -152,6 +221,125 @@ const MainPage = ({ openAuthModal }) => {
         tag="authors"
         emptyMessage="No authors available."
         data={allAuthors}
+        onAdd={() =>
+          setModalVisible({
+            visible: true,
+            type: "add_author",
+            data: null,
+          })
+        }
+        onEditAuthor={(item) =>
+          setModalVisible({
+            visible: true,
+            type: "edit_author",
+            data: item,
+          })
+        }
+        onDeleteAuthor={(item) =>
+          setModalVisible({
+            visible: true,
+            type: "edit_author",
+            data: item,
+          })
+        }
+      />
+      {/* bbok operations */}
+      <AddEditBook
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        isOpen={modalVisible.visible && modalVisible.type === "add_book"}
+        onRefresh={() => {
+          fetchAllBooks();
+          fetchAllFavBooks();
+        }}
+        type={"add"}
+      />
+      <AddEditBook
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        book={modalVisible.data}
+        type={"edit"}
+        isOpen={modalVisible.visible && modalVisible.type === "edit_book"}
+        onRefresh={() => {
+          fetchAllBooks();
+          fetchAllFavBooks();
+        }}
+      />
+
+      {/* category operations */}
+
+      <AddEditCategory
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        // category={}
+        type={"add"}
+        onRefresh={() => {
+          fetchAllCategories();
+        }}
+        isOpen={modalVisible.visible && modalVisible.type === "add_category"}
+      />
+
+      <AddEditCategory
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        category={modalVisible.data}
+        type={"edit"}
+        onRefresh={() => {
+          fetchAllCategories();
+        }}
+        isOpen={modalVisible.visible && modalVisible.type === "edit_category"}
+      />
+
+      {/* author operations */}
+
+      <AddEditAuthor
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        type="add"
+        onRefresh={() => {
+          setAllAuthors();
+        }}
+        isOpen={modalVisible.visible && modalVisible.type === "add_author"}
+      />
+
+      <AddEditAuthor
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        onRefresh={() => {
+          setAllAuthors();
+        }}
+        type="edit"
+        isOpen={modalVisible.visible && modalVisible.type === "edit_author"}
       />
     </div>
   );

@@ -13,8 +13,7 @@ const MobileNav = ({ openAuthModal }) => {
 
   const navItems = [
     { name: "Home", icon: Home, path: "/" },
-    { name: "Favourites", icon: Heart, path: "/favourites" },
-    { name: "Books", icon: Book, path: "/books" },
+    { name: "Collection", icon: Book, path: "/books" },
     { name: "Categories", icon: Library, path: "/categories" },
     { name: "Authors", icon: BookUser, path: "/authors" },
   ];

@@ -6,12 +6,16 @@ import { FreeMode, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
 
-import { Heart, Pencil, Trash2, Plus, Ghost } from "lucide-react";
+import { Heart, Trash2, Plus, Ghost, Edit2, Pencil, Globe } from "lucide-react";
 import Image from "next/image";
-
+import { Button } from "../ui/Button";
+import "swiper/css/navigation";
+import { useRouter } from "next/navigation";
+import { formatDate } from "@/utils/helper/format";
 // --- Sub-Components for Different Types ---
 
 export const BookCard = ({ item, onEdit, onDelete, onToggleFavorite }) => {
+  const router = useRouter();
   const authorName =
     item.author?.name || item.customAuthor || "Independent Author";
 
@@ -25,29 +29,29 @@ export const BookCard = ({ item, onEdit, onDelete, onToggleFavorite }) => {
   };
 
   return (
-    <div className="group cursor-pointer transition-transform duration-300 hover:-translate-y-2 overflow-hidden">
-      <div className="relative flex flex-col overflow-hidden rounded-xl glass border border-card-border shadow-lg">
-        {/* Book Cover */}
-        <div className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white">
+    <div className="group cursor-pointer transition-transform duration-300 hover:-translate-y-2 w-full max-w-sm ">
+      <div className="relative flex flex-col overflow-hidden rounded-xl bg-card border border-card-border shadow-lg">
+        {/* Image */}
+        <div className="relative h-56 md:h-80 overflow-hidden">
           <Image
             src={item.thumbNail || "/thumbnail.jpg"}
             alt={item.title}
             fill
-            className="object-contain transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 300px"
+            className=" w-full transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width:768px) 100vw, 300px"
           />
 
-          {/* Favorite Button */}
+          {/* Favorite */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               onToggleFavorite(item._id);
             }}
-            className={`absolute top-2 right-2 w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md border transition-all
+            className={`absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md border transition
             ${
               item.isFavorite
-                ? "bg-red-500 border-red-500 text-white shadow-md"
-                : "bg-black/40 border-white/30 text-white hover:bg-red-500 hover:border-red-500"
+                ? "bg-red-500 border-red-500 text-white"
+                : "bg-black/40 border-white/20 text-white hover:bg-red-500 hover:border-red-500"
             }`}
           >
             <Heart
@@ -57,27 +61,27 @@ export const BookCard = ({ item, onEdit, onDelete, onToggleFavorite }) => {
           </button>
         </div>
 
-        {/* Book Info */}
-        <div className="p-3 space-y-2">
+        {/* Content */}
+        <div className="flex flex-col gap-2 p-4">
           {/* Title */}
-          <h4 className="text-sm font-bold text-foreground line-clamp-1">
+          <h3 className="font-semibold text-base text-foreground line-clamp-2">
             {item.title}
-          </h4>
+          </h3>
 
           {/* Author */}
-          <p className="text-xs text-muted line-clamp-1">{authorName}</p>
+          <p className="text-base text-muted line-clamp-1">{authorName}</p>
 
           {/* Category + Pages */}
-          <div className="flex items-center justify-between text-[11px] text-muted">
+          <div className="flex items-center justify-between text-base text-muted">
             <span className="truncate">{categoryName}</span>
 
             {item.numberOfPages && <span>{item.numberOfPages} pages</span>}
           </div>
 
-          {/* Status Badge */}
-          <div>
+          {/* Status */}
+          <div className="pt-1">
             <span
-              className={`px-2 py-0.5 text-[10px] rounded-full border capitalize ${
+              className={`inline-block px-3 py-1 text-sm rounded-full border capitalize ${
                 statusStyles[item.status] ||
                 "bg-gray-500/20 text-gray-400 border-gray-500/30"
               }`}
@@ -88,11 +92,14 @@ export const BookCard = ({ item, onEdit, onDelete, onToggleFavorite }) => {
 
           {/* Actions */}
           <div className="flex items-center justify-between pt-2">
-            {/* Read Button */}
-            <button className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full bg-primary text-white hover:opacity-90 transition">
+            <Button
+              size="sm"
+              onClick={() => router.push(`/books/${item._id}`)}
+              className="cursor-pointer flex items-center gap-1 bg-primary hover:bg-primary/90 text-white"
+            >
               <Plus size={14} />
               Read
-            </button>
+            </Button>
 
             <div className="flex gap-2">
               {/* Edit */}
@@ -101,9 +108,9 @@ export const BookCard = ({ item, onEdit, onDelete, onToggleFavorite }) => {
                   e.stopPropagation();
                   onEdit(item);
                 }}
-                className="w-7 h-7 flex items-center justify-center rounded-full border border-card-border text-muted hover:text-primary hover:border-primary transition"
+                className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-md border border-card-border text-muted hover:text-primary hover:border-primary transition"
               >
-                <Pencil size={14} />
+                <Edit2 size={14} />
               </button>
 
               {/* Delete */}
@@ -112,7 +119,7 @@ export const BookCard = ({ item, onEdit, onDelete, onToggleFavorite }) => {
                   e.stopPropagation();
                   onDelete(item._id);
                 }}
-                className="w-7 h-7 flex items-center justify-center rounded-full border border-card-border text-muted hover:text-red-500 hover:border-red-500 transition"
+                className=" cursor-pointer flex h-8 w-8 items-center justify-center rounded-md border border-card-border text-muted hover:text-red-500 hover:border-red-500 transition"
               >
                 <Trash2 size={14} />
               </button>
@@ -123,7 +130,8 @@ export const BookCard = ({ item, onEdit, onDelete, onToggleFavorite }) => {
     </div>
   );
 };
-export const AuthorCard = ({ item }) => (
+
+export const AuthorCardHome = ({ item }) => (
   <div className="group cursor-pointer flex flex-col items-center transition-transform duration-300 hover:-translate-y-2">
     {/* Added lift here */}
     <div className="w-full aspect-square rounded-full overflow-hidden border-2 border-card-border group-hover:border-primary transition-all duration-300 shadow-xl">
@@ -135,33 +143,129 @@ export const AuthorCard = ({ item }) => (
         height={100}
       />
     </div>
-    <p className="mt-3 font-bold text-sm text-foreground group-hover:text-primary transition-colors text-center line-clamp-1">
+    <p className="mt-3 font-bold text-base text-foreground group-hover:text-primary transition-colors text-center line-clamp-1">
       {item.name}
     </p>
-    <p className="text-[10px] text-muted line-clamp-1">Author</p>
+    <p className="text-base text-muted line-clamp-1">Author</p>
   </div>
 );
 
-export const CategoryCard = ({ item }) => (
-  <div className="group cursor-pointer transition-transform duration-300 hover:-translate-y-2">
-    {" "}
-    {/* Added lift here */}
-    <div className="h-40 rounded-2xl glass border border-card-border p-5 flex flex-col justify-between transition-all duration-300 group-hover:bg-primary/10 group-hover:border-primary/30 shadow-md">
-      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary mb-2">
-        <span className="text-lg font-bold">{item.name?.charAt(0)}</span>
+export const AuthorCard = ({ item, onEdit, onDelete }) => {
+  return (
+    <div className="group relative border border-card-border rounded-xl p-4 bg-card hover:border-primary/30 transition">
+      {/* Actions */}
+      <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+        <button
+          onClick={() => onEdit(item)}
+          className="cursor-pointer p-1 rounded-md hover:bg-card-border"
+        >
+          <Pencil size={16} />
+        </button>
+
+        <button
+          onClick={() => onDelete(item)}
+          className="cursor-pointer p-1 rounded-md hover:bg-red-500/20"
+        >
+          <Trash2 size={16} className="text-red-400" />
+        </button>
       </div>
-      <div>
-        <h4 className="font-bold text-sm text-foreground line-clamp-1">
-          {item.name}
+
+      {/* Profile */}
+      <div className="flex items-center gap-3 mb-3">
+        <img
+          src={
+            item?.profileImage ||
+            `https://ui-avatars.com/api/?name=${item?.name}`
+          }
+          alt={item?.name}
+          className="w-12 h-12 rounded-full object-cover border border-card-border"
+        />
+
+        <div>
+          <h3 className="font-semibold text-sm">{item?.name}</h3>
+
+          {item?.website && (
+            <a
+              href={item.website}
+              target="_blank"
+              className="text-xs text-primary flex items-center gap-1"
+            >
+              <Globe size={12} />
+              Website
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* Bio */}
+      <p className="text-xs text-muted line-clamp-3">
+        {item?.biography || "No biography available"}
+      </p>
+
+      {/* Footer */}
+      <div className="mt-3 text-[11px] text-muted flex flex-row justify-between gap-1">
+        <span>Created: {formatDate(item?.createdAt)}</span>
+        <span>Updated: {formatDate(item?.updatedAt)}</span>
+      </div>
+    </div>
+  );
+};
+
+export const CategoryCard = ({ item, onEdit, onDelete }) => (
+  <div className="group relative cursor-pointer transition-transform duration-300 hover:-translate-y-2">
+    {/* ACTION BUTTONS */}
+    <div className="absolute top-3 right-3 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition z-20 pointer-events-auto">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit?.(item);
+        }}
+        className="p-2 cursor-pointer rounded-lg bg-card border border-card-border hover:bg-primary/20 transition shadow-sm"
+      >
+        <Pencil size={16} className="text-primary" />
+      </button>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete?.(item);
+        }}
+        className="p-2 cursor-pointer rounded-lg bg-card border border-card-border hover:bg-red-500/20 transition shadow-sm"
+      >
+        <Trash2 size={16} className="text-red-400" />
+      </button>
+    </div>
+
+    {/* CARD */}
+    <div className="relative z-10 h-full rounded-2xl glass border border-card-border p-5 flex flex-col justify-between transition-all duration-300 group-hover:bg-primary/10 group-hover:border-primary/30 shadow-md">
+      {/* Top */}
+      <div className="flex items-start justify-between">
+        <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+          <span className="text-lg font-bold">
+            {item?.name?.charAt(0)?.toUpperCase()}
+          </span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="mt-2">
+        <h4 className="font-bold text-base md:text-lg text-foreground line-clamp-1">
+          {item?.name}
         </h4>
-        <p className="text-[10px] text-muted line-clamp-2 mt-1">
-          {item.description || "Browse collection"}
+
+        <p className="text-sm md:text-base text-muted line-clamp-2 mt-1">
+          {item?.description || "Browse collection"}
         </p>
+      </div>
+
+      {/* Footer */}
+      <div className="text-[11px] text-muted mt-3 flex flex-row justify-between gap-1">
+        <span>Created: {formatDate(item?.createdAt)}</span>
+        <span>Updated: {formatDate(item?.updatedAt)}</span>
       </div>
     </div>
   </div>
 );
-
 // --- Main Slider Component ---
 
 const SectionSlider = ({
@@ -171,6 +275,14 @@ const SectionSlider = ({
   data = [],
   emptyMessage = "No books found",
   tag = "favourite",
+  onDeleteBook,
+  onEditBook,
+  onToggleFavoriteBook,
+  onAdd, // this is for the add model open
+  onDeleteAuthor,
+  onEditAuthor,
+  onDeleteCategory,
+  onEditCategory,
 }) => {
   // Extracting the list safely from the API response structure
   const list = Array.isArray(data) ? data : data?.data || [];
@@ -183,7 +295,7 @@ const SectionSlider = ({
       </div>
       <p className="text-sm font-medium text-foreground">No {tag}s found</p>
       <p className="text-xs text-muted mt-1 px-4 text-center">{emptyMessage}</p>
-      <button className="mt-4 flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-4 py-2 rounded-full bg-primary/20 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer">
+      <button className="mt-4 flex items-center gap-1.5 text-sm uppercase font-bold tracking-wider px-4 py-2 rounded-full bg-primary/20 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer">
         <Plus size={12} /> Add {type}
       </button>
     </div>
@@ -192,11 +304,31 @@ const SectionSlider = ({
   const renderCard = (item) => {
     switch (type) {
       case "book":
-        return <BookCard item={item} />;
+        return (
+          <BookCard
+            item={item}
+            onDelete={() => onDeleteBook(item)}
+            onEdit={() => onEditBook(item)}
+            onToggleFavorite={() => onToggleFavoriteBook(item)}
+          />
+        );
       case "author":
-        return <AuthorCard item={item} />;
+        return (
+          <AuthorCard
+            item={item}
+            onDelete={() => onDeleteAuthor(item)}
+            onEdit={() => onEditAuthor(item)}
+            // onToggleFavorite={onToggleFavoriteAuthor}
+          />
+        );
       case "category":
-        return <CategoryCard item={item} />;
+        return (
+          <CategoryCard
+            item={item}
+            onDelete={() => onDeleteCategory(item)}
+            onEdit={() => onEditCategory(item)}
+          />
+        );
       default:
         return (
           <div className="glass h-48 rounded-xl flex items-center justify-center text-xs">
@@ -207,30 +339,35 @@ const SectionSlider = ({
   };
 
   return (
-    <section className="px-4 md:px-8 w-full overflow-hidden">
-      <div className="relative mb-4 ml-1 pl-4 flex items-center">
-        {/* The Gradient Border Bar */}
-        <div
-          className="absolute left-0 top-0 bottom-1 w-1.5 rounded-full"
-          style={{
-            background:
-              "linear-gradient(to bottom, var(--primary), var(--secondary))",
-          }}
-        />
+    <section className="px-4 md:px-8 w-full overflow-hidden ">
+      <div className="flex items-center justify-between  mb-6">
+        <SectionHeading title={title} />
 
-        <h3 className="text-base md:text-xl font-bold text-foreground">
-          {title}
-        </h3>
+        <button
+          onClick={onAdd}
+          className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary via-secondary to-accent text-white text-sm font-semibold"
+        >
+          <Plus size={16} />
+          Add{" "}
+          <span className="capitalize">
+            {tag == "favourite" ? "Book" : tag}
+          </span>
+        </button>
       </div>
       <Swiper
-        slidesPerView={1.5}
         spaceBetween={16}
         freeMode={true}
         modules={[FreeMode, Navigation]}
         breakpoints={{
-          640: { slidesPerView: 2.5 },
-          1024: { slidesPerView: 4.5 },
-          1280: { slidesPerView: 5.5 },
+          0: {
+            slidesPerView: 1.2,
+          },
+          640: {
+            slidesPerView: 2.2,
+          },
+          1024: {
+            slidesPerView: 4.2,
+          },
         }}
         className="mySwiper !overflow-visible"
       >

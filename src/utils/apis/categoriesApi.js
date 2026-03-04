@@ -19,16 +19,15 @@ export const createCategory = async (categoryData) => {
  * 2. Get All Categories
  * Fetches the complete list of genres/categories for the library
  */
-export const getAllCategories = async () => {
-  try {
-    const { data } = await axiosInstance.get("/categories/all");
-    return data.data;
-  } catch (error) {
-    console.error("Get All Categories Error:", error);
-    throw error;
-  }
-};
+export const getAllCategories = async (params = {}) => {
+  const { data } = await axiosInstance.get("/categories/all", {
+    params,
+  });
 
+  console.log("getAllCategories", data);
+
+  return data;
+};
 /**
  * 3. Update Category Details
  * @param {string} id - The MongoDB ID of the category
