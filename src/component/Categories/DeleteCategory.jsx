@@ -43,7 +43,6 @@ const DeleteCategory = ({ isOpen, onClose, category, onRefresh }) => {
         setStatus("idle");
       }, 1500);
     } catch (error) {
-      console.log("Delete category error:", error);
       setStatus("error");
     }
   };

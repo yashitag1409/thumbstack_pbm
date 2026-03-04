@@ -24,8 +24,6 @@ const BookReader = ({ id }) => {
 
       const data = await getSingleBook(id);
 
-      console.log("data", data);
-
       if (!data) {
         setStatus("empty");
         return;
@@ -39,7 +37,6 @@ const BookReader = ({ id }) => {
         setStatus("success");
       }
     } catch (error) {
-      console.log(error);
       setStatus("error");
     }
   };

@@ -24,7 +24,7 @@ export const getAllCategories = async (params = {}) => {
     params,
   });
 
-  console.log("getAllCategories", data);
+  // console.log("getAllCategories", data);
 
   return data;
 };

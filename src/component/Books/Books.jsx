@@ -7,6 +7,7 @@ import { getAllBooks, updateBook } from "@/utils/apis/booksApi";
 import AddEditBook from "./AddEditBooks";
 import { Plus } from "lucide-react";
 import DeleteBooks from "./DeleteBooks";
+import CustomDropdown from "../CustomElementsTag/CustomDropdown";
 
 const Books = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -17,7 +18,13 @@ const Books = () => {
   const [hasMore, setHasMore] = useState(true);
 
   const observer = useRef();
+  const [filters, setFilters] = useState({
+    search: "",
+    status: "",
+    tag: "",
+  });
 
+  const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
   const [modalVisible, setModalVisible] = useState({
     type: "",
     visible: false,
@@ -25,25 +32,27 @@ const Books = () => {
   });
   const [updateFav, setUpdateFav] = useState(false);
   const fetchBooks = async () => {
-    if (!hasMore) return;
+    // if (!hasMore) return;
 
     try {
       setLoading(true);
 
-      const res = await getAllBooks({ page, limit: 10 });
-
-      console.log("API Response:", res);
+      const res = await getAllBooks({
+        page,
+        limit: 10,
+        search: debouncedSearch || undefined,
+        status: filters.status,
+        tag: filters.tag,
+      });
 
       const newBooks = res.data || [];
 
       setAllBooks((prev) => {
-        // prevent duplicates
         const existingIds = new Set(prev.map((b) => b._id));
         const filtered = newBooks.filter((b) => !existingIds.has(b._id));
         return [...prev, ...filtered];
       });
 
-      // pagination control
       if (page >= res.totalPages) {
         setHasMore(false);
       }
@@ -53,10 +62,19 @@ const Books = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchBooks();
+    }
+  }, [page, debouncedSearch, filters.status, filters.tag]);
 
   useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    setAllBooks([]);
+
     fetchBooks();
-  }, [page]);
+  }, [debouncedSearch, filters.status, filters.tag]);
 
   // update the book by isFavorite status
   const updateBooksByFav = async (book) => {
@@ -73,7 +91,6 @@ const Books = () => {
         ),
       );
     } catch (error) {
-      console.log("Favorite update error:", error);
     } finally {
       setUpdateFav(false);
     }
@@ -84,6 +101,14 @@ const Books = () => {
       fetchBooks();
     }
   }, [isAuthenticated, modalVisible.visible, updateFav]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(filters.search);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [filters.search]);
 
   // Infinite Scroll Observer
   const lastBookRef = (node) => {
@@ -100,6 +125,12 @@ const Books = () => {
     if (node) observer.current.observe(node);
   };
 
+  const statusOptions = [
+    { label: "All Status", value: "" },
+    { label: "Want to Read", value: "want_to_read" },
+    { label: "Reading", value: "reading" },
+    { label: "Completed", value: "completed" },
+  ];
   return (
     <section className="px-4 md:px-8 py-6">
       <div className="flex items-center justify-between  mb-6">
@@ -113,6 +144,60 @@ const Books = () => {
         >
           <Plus size={16} />
           Add Books
+        </button>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-3 mb-6">
+        {/* Search */}
+        <input
+          type="text"
+          placeholder="Search title or description..."
+          value={filters.search}
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, search: e.target.value }))
+          }
+          className="border border-card-border rounded-lg px-3 py-2 bg-background text-sm outline-none focus:border-primary"
+        />
+
+        {/* Status Filter */}
+        <div className="md:w-48">
+          <CustomDropdown
+            options={statusOptions}
+            value={filters.status}
+            labelKey="label"
+            valueKey="value"
+            placeholder="Select Status"
+            onChange={(val) =>
+              setFilters((prev) => ({
+                ...prev,
+                status: val,
+              }))
+            }
+          />
+        </div>
+
+        {/* Tag Filter */}
+        <input
+          type="text"
+          placeholder="Filter by tag"
+          value={filters.tag}
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, tag: e.target.value }))
+          }
+          className="border border-card-border rounded-lg px-3 py-2 bg-background text-sm outline-none"
+        />
+
+        <button
+          onClick={() =>
+            setFilters({
+              search: "",
+              status: "",
+              tag: "",
+            })
+          }
+          className="px-3 py-2 border border-card-border rounded-lg text-sm cursor-pointer"
+        >
+          Clear
         </button>
       </div>
       {/* Loading */}

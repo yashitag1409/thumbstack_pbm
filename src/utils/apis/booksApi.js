@@ -36,6 +36,8 @@ module.exports.getAllBooks = async ({
       },
     });
 
+    console.log("getAllBooks", data);
+
     return data;
   } catch (error) {
     console.error("Get All Books Error:", error);
@@ -59,7 +61,7 @@ module.exports.getSingleBook = async (id) => {
   try {
     const { data } = await axiosInstance.get(`/books/${id}`);
 
-    console.log("data from get single book 📷📷", data);
+    // console.log("data from get single book 📷📷", data);
 
     return data.data;
   } catch (error) {

@@ -45,7 +45,6 @@ const Categories = () => {
         limit: 10,
         search: debouncedSearch || undefined,
       });
-      console.log("API Response:", res);
       const newCategories = res.data || [];
 
       setCategories((prev) =>
@@ -54,7 +53,6 @@ const Categories = () => {
 
       setTotalPages(res.totalPages || 1);
     } catch (error) {
-      console.log("Category fetch error:", error);
     } finally {
       setLoading(false);
     }

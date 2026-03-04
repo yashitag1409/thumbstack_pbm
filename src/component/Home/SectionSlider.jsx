@@ -90,6 +90,26 @@ export const BookCard = ({ item, onEdit, onDelete, onToggleFavorite }) => {
             </span>
           </div>
 
+          {/* Tags */}
+          {item.tags && item.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-1">
+              {item.tags.slice(0, 4).map((tag, index) => (
+                <span
+                  key={index}
+                  className="text-xs px-2 py-1 rounded-md bg-primary/10 text-primary border border-primary/20"
+                >
+                  {tag}
+                </span>
+              ))}
+
+              {item.tags.length > 4 && (
+                <span className="text-xs px-2 py-1 rounded-md bg-card-border text-muted">
+                  +{item.tags.length - 4}
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex items-center justify-between pt-2">
             <Button

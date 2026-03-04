@@ -56,7 +56,7 @@ const Authors = () => {
         search: debouncedSearch,
       });
 
-      console.log("API Response:", res);
+      // console.log("API Response:", res);
 
       const newAuthors = res?.data || res?.data?.data || [];
 
@@ -71,7 +71,7 @@ const Authors = () => {
 
       setTotalPages(res.totalPages || 1);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ const Authors = () => {
 
     if (node) observer.current.observe(node);
   };
-  console.log("authors state:", authors);
+  // console.log("authors state:", authors);
   return (
     <section className="px-4 md:px-8 py-6">
       {/* Header */}

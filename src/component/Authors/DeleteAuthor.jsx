@@ -18,7 +18,7 @@ const DeleteAuthor = ({ isOpen, onClose, author, onRefresh }) => {
       onRefresh?.();
       onClose?.();
     } catch (error) {
-      console.log("Delete author error:", error);
+      //   console.log("Delete author error:", error);
     } finally {
       setLoading(false);
       //   setTimeout(() => {

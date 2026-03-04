@@ -26,7 +26,7 @@ export const getAllAuthors = async (params = {}) => {
   try {
     const { data } = await axiosInstance.get("/authors/all", { params });
 
-    console.log("getAllAuthors", data);
+    // console.log("getAllAuthors", data);
 
     return data;
   } catch (error) {

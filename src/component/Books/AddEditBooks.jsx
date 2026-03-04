@@ -44,12 +44,9 @@ const AddEditBook = ({ isOpen, type, onClose, book = null, onRefresh }) => {
             getAllCategories(),
           ]);
 
-          console.log("authRes", authRes);
-          console.log("catRes", catRes);
           setAuthors([...authRes.data, { _id: "other", name: "Other" }]);
           setCategories([...catRes.data, { _id: "other", name: "Other" }]);
         } catch (err) {
-          console.log(err);
           console.error("Failed to load select data");
         }
       };

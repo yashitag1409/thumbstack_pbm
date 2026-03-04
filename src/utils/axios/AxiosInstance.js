@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { logout } from "../redux/slices/authSlice";
 import { store } from "../redux/store";
-import { TEST_URL } from "../helper/BASE_URL";
+import { BASE_URL, TEST_URL } from "../helper/BASE_URL";
 
 // 🔥 Router bridge (no separate file)
 let routerPush = null;
@@ -15,7 +15,7 @@ export const navigate = (path) => {
 
 // Create Axios instance
 const axiosInstance = axios.create({
-  baseURL: TEST_URL,
+  baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 

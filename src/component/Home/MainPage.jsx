@@ -36,50 +36,45 @@ const MainPage = ({ openAuthModal }) => {
 
   const fetchAllFavBooks = async () => {
     try {
-      console.log("fetching all books");
-
       const data = await getFavouriteBooks();
-      console.log("all fav books data 👇👇👇\n\n", data);
       setAllFavBooks(data);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   const fetchAllBooks = async () => {
     try {
-      console.log("fetching all books");
+      // console.log("fetching all books");
 
       const data = await getAllBooks();
-      console.log("all books data 👇👇👇\n\n", data);
+      // console.log("all books data 👇👇👇\n\n", data);
       setAllBooks(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
   // fetch all categories
   const fetchAllCategories = async () => {
     try {
-      console.log("fetching all books");
+      // console.log("fetching all books");
 
       const data = await getAllCategories();
-      console.log("all categories data 👇👇👇\n\n", data);
+      // console.log("all categories data 👇👇👇\n\n", data);
       setAllCategories(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
   // fetch all authors
   const fetchAllAuthors = async () => {
     try {
-      console.log("fetching all books");
+      // console.log("fetching all books");
 
       const data = await getAllAuthors();
-      console.log("all authors data 👇👇👇\n\n", data);
+      // console.log("all authors data 👇👇👇\n\n", data);
       setAllAuthors(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
