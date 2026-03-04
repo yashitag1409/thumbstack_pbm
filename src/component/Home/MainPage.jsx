@@ -5,15 +5,81 @@ import { useSelector } from "react-redux";
 // import SectionSlider from "@/components/home/SectionSlider";
 import { LogIn, Star } from "lucide-react";
 import SectionSlider from "./SectionSlider";
+import { getAllBooks, getFavouriteBooks } from "@/utils/apis/booksApi";
+import { getAllCategories } from "@/utils/apis/categoriesApi";
+import { getAllAuthors } from "@/utils/apis/authorsApi";
 
 const MainPage = ({ openAuthModal }) => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
 
+  const [allFavBooks, setAllFavBooks] = useState([]);
+  const [allBooks, setAllBooks] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
+  const [allAuthors, setAllAuthors] = useState([]);
+
   // Mock effect to simulate API loading for skeleton states
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
+  }, []);
+
+  // fetch the ALL books by this user
+
+  const fetchAllFavBooks = async () => {
+    try {
+      console.log("fetching all books");
+
+      const data = await getFavouriteBooks();
+      console.log("all fav books data 👇👇👇\n\n", data);
+      setAllFavBooks(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchAllBooks = async () => {
+    try {
+      console.log("fetching all books");
+
+      const data = await getAllBooks();
+      console.log("all books data 👇👇👇\n\n", data);
+      setAllBooks(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // fetch all categories
+  const fetchAllCategories = async () => {
+    try {
+      console.log("fetching all books");
+
+      const data = await getAllCategories();
+      console.log("all categories data 👇👇👇\n\n", data);
+      setAllCategories(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // fetch all authors
+  const fetchAllAuthors = async () => {
+    try {
+      console.log("fetching all books");
+
+      const data = await getAllAuthors();
+      console.log("all authors data 👇👇👇\n\n", data);
+      setAllAuthors(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllBooks();
+    fetchAllCategories();
+    fetchAllAuthors();
+    fetchAllFavBooks();
   }, []);
 
   if (!isAuthenticated || !user) {
@@ -48,12 +114,14 @@ const MainPage = ({ openAuthModal }) => {
 
   return (
     <div className="space-y-12 py-6">
-      {/* 1. Favourite Section (Filtered Books) */}
+      {/* 1. Favorite Books Section */}
       <SectionSlider
         title="Your Favorites"
         type="book"
         isLoading={loading}
-        endpoint="/api/books/all?isFavourite=true"
+        tag="favourite"
+        emptyMessage="No favorite books available."
+        data={allFavBooks}
       />
 
       {/* 2. All Categories Section */}
@@ -61,7 +129,9 @@ const MainPage = ({ openAuthModal }) => {
         title="Explore Categories"
         type="category"
         isLoading={loading}
-        endpoint="/api/categories/all"
+        tag="categories"
+        emptyMessage="No categories available."
+        data={allCategories}
       />
 
       {/* 3. All Books Section */}
@@ -69,7 +139,9 @@ const MainPage = ({ openAuthModal }) => {
         title="Latest Additions"
         type="book"
         isLoading={loading}
-        endpoint="/api/books/all"
+        tag="books"
+        emptyMessage="No books added yet."
+        data={allBooks}
       />
 
       {/* 4. All Authors Section */}
@@ -77,7 +149,9 @@ const MainPage = ({ openAuthModal }) => {
         title="Top Authors"
         type="author"
         isLoading={loading}
-        endpoint="/api/authors/all"
+        tag="authors"
+        emptyMessage="No authors available."
+        data={allAuthors}
       />
     </div>
   );

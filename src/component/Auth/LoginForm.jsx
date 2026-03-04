@@ -16,7 +16,10 @@ const LoginForm = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-
+  const [message, setMessage] = useState({
+    msg: "",
+    title: "",
+  });
   const [success, setSuccess] = useState(false);
   const [countdown, setCountdown] = useState(10);
 
@@ -39,11 +42,19 @@ const LoginForm = ({ onClose }) => {
   }, [countdown, success, onClose]);
 
   const handleLogin = async () => {
-    if (!email) return;
+    if (!email) {
+      setMessage({ msg: "Email is required", title: "Error" });
+      return;
+    }
 
     let result;
 
     if (loginMethod === "password") {
+      if (!password) {
+        setMessage({ msg: "Password is required", title: "Error" });
+        return;
+      }
+
       result = await dispatch(loginViaPassword({ email, password }));
     } else {
       result = await dispatch(loginViaOtp({ email, otp }));
@@ -52,12 +63,31 @@ const LoginForm = ({ onClose }) => {
     if (result.meta.requestStatus === "fulfilled") {
       setSuccess(true);
     }
+
+    setTimeout(() => {
+      setMessage({ msg: "", title: "" });
+    }, 5000);
   };
 
   const handleSendOtp = async () => {
-    if (!email) return;
+    if (!email) {
+      setMessage({ msg: "Email is required", title: "Error" });
+      return;
+    }
+    setTimeout(() => {
+      setMessage({ msg: "", title: "" });
+    }, 5000);
+
     await dispatch(sendOtp(email));
   };
+
+  useEffect(() => {
+    if (message.msg) {
+      setTimeout(() => {
+        setMessage({ msg: "", title: "" });
+      }, 5000);
+    }
+  }, [message.msg]);
 
   // ========================
   // SUCCESS SCREEN
@@ -87,15 +117,20 @@ const LoginForm = ({ onClose }) => {
     <div className="space-y-4">
       {/* Loading State */}
       {loading && (
-        <div className="p-2 text-xs text-blue-400 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+        <div className="p-4 text-xs text-blue-400 bg-blue-500/10 border border-blue-500/30 rounded-lg">
           Authenticating... Please wait
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="p-2 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg">
+        <div className="p-4 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg">
           {error}
+        </div>
+      )}
+      {message.msg && (
+        <div className="p-4 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          {message.msg}
         </div>
       )}
 

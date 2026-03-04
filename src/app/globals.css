@@ -27,9 +27,9 @@
     --card-border: #2d334d; /* Subtle Dark Border */
 
     /* Brand Colors (Dark - Glowing) */
-    --primary: #a78bfa; /* Digital Lavender (Your Trend Color) */
-    --secondary: #3b82f6; /* Corporate Blue (Jio Style) */
-    --accent: #f472b6; /* Hot Pink (Glow Accent) */
+    --primary: #6366f1; /* Digital Lavender (Your Trend Color) */
+    --secondary: #0ea5e9; /* Corporate Blue (Jio Style) */
+    --accent: #8b5cf6; /* Hot Pink (Glow Accent) */
     --muted: #94a3b8; /* Blue-Grey Muted Text */
   }
 }

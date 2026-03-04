@@ -2,19 +2,21 @@
 
 import React from "react";
 import { useSelector } from "react-redux";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Home, Book, LayoutGrid, Search, User } from "lucide-react";
+import { Home, Book, User, Library, BookUser, Heart } from "lucide-react";
 
 const MobileNav = ({ openAuthModal }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const pathname = usePathname();
+  const router = useRouter();
 
   const navItems = [
     { name: "Home", icon: Home, path: "/" },
-    { name: "Search", icon: Search, path: "/search" },
+    { name: "Favourites", icon: Heart, path: "/favourites" },
     { name: "Books", icon: Book, path: "/books" },
-    { name: "Categories", icon: LayoutGrid, path: "/categories" },
+    { name: "Categories", icon: Library, path: "/categories" },
+    { name: "Authors", icon: BookUser, path: "/authors" },
   ];
 
   const getInitials = (name) => {
@@ -28,9 +30,18 @@ const MobileNav = ({ openAuthModal }) => {
     );
   };
 
+  // 🔥 Triggered on Profile Section Click
+  const handleProfileClick = () => {
+    if (!isAuthenticated || !user) {
+      openAuthModal(); // Open Login Modal if guest
+    } else {
+      router.push("/profile"); // Navigate to Profile if logged in
+    }
+  };
+
   return (
     /* Added bottom-4 for margin, rounded-2xl for a floating look, and the glass class */
-    <nav className="fixed bottom-4 left-8 right-8 h-12 glass rounded-full flex items-center justify-around px-2 z-[60] md:hidden shadow-2xl border-white/10">
+    <nav className="fixed bottom-2 left-8 right-8 h-12 glass rounded-full flex items-center justify-around px-2 z-[60] md:hidden shadow-2xl border-white/10">
       {navItems.map((item) => {
         const isActive = pathname === item.path;
         const Icon = item.icon;
@@ -68,9 +79,10 @@ const MobileNav = ({ openAuthModal }) => {
       })}
 
       {/* Profile Section */}
-      <Link
-        href="/profile"
-        className={`flex flex-col items-center justify-center transition-all duration-300 ${
+      {/* Profile Section (Converted to div for conditional logic) */}
+      <div
+        onClick={handleProfileClick}
+        className={`flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${
           pathname === "/profile" ? "scale-110" : ""
         }`}
       >
@@ -95,8 +107,7 @@ const MobileNav = ({ openAuthModal }) => {
             )}
           </div>
         </div>
-        {/* <span className="text-[10px] font-bold mt-1 text-muted">Space</span> */}
-      </Link>
+      </div>
     </nav>
   );
 };

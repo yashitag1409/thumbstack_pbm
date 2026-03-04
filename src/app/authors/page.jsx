@@ -1,11 +1,11 @@
-import Categories from "@/component/Categories/Categories";
+import Authors from "@/component/Authors/Authors";
 import ProtectedPage from "@/component/ProtectedPage/protectPage";
 import React from "react";
 
 const page = () => {
   return (
     <ProtectedPage>
-      <Categories />
+      <Authors />
     </ProtectedPage>
   );
 };

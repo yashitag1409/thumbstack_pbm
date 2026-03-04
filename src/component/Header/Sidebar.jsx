@@ -6,17 +6,18 @@ import {
   Home,
   Heart,
   Book,
-  LayoutGrid,
-  Users,
+  Library,
+  BookUser,
   Search,
   User,
 } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/utils/redux/slices/authSlice";
-
+import { usePathname } from "next/navigation";
 const Sidebar = ({ openAuthModal }) => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const pathname = usePathname();
   const getInitials = (name) => {
     if (!name) return "";
     return name
@@ -30,10 +31,10 @@ const Sidebar = ({ openAuthModal }) => {
   const menuItems = [
     { name: "Home", icon: <Home size={24} />, path: "/" },
     { name: "Search", icon: <Search size={24} />, path: "/search" },
-    { name: "Favorites", icon: <Heart size={24} />, path: "/favorites" },
+    { name: "Favorites", icon: <Heart size={24} />, path: "/favourites" },
     { name: "All Books", icon: <Book size={24} />, path: "/books" },
-    { name: "Categories", icon: <LayoutGrid size={24} />, path: "/categories" },
-    { name: "Authors", icon: <Users size={24} />, path: "/authors" },
+    { name: "Categories", icon: <Library size={24} />, path: "/categories" },
+    { name: "Authors", icon: <BookUser size={24} />, path: "/authors" },
   ];
 
   return (
@@ -64,18 +65,40 @@ const Sidebar = ({ openAuthModal }) => {
       {/* 2. Navigation Menu */}
       <nav className="flex-1 w-full px-4">
         <ul className="space-y-4">
-          {menuItems.map((item) => (
-            <Link href={item.path} key={item.name}>
-              <li className="flex items-center p-3 mb-2 rounded-xl hover:bg-white/10 hover:text-[#a78bfa] cursor-pointer transition-all duration-200 group/item">
-                <div className="min-w-[40px] flex justify-center group-hover/item:scale-110 transition-transform group-hover/item:drop-shadow-[0_0_5px_#3b82f6]">
-                  {item.icon}
-                </div>
-                <span className="ml-4 font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap">
-                  {item.name}
-                </span>
-              </li>
-            </Link>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = pathname === item.path;
+
+            return (
+              <Link href={item.path} key={item.name}>
+                <li
+                  className={`flex items-center p-3 mb-2 rounded-xl cursor-pointer transition-all duration-200 group/item
+          ${
+            isActive
+              ? "bg-white/10 text-[#a78bfa] shadow-[0_0_10px_rgba(167,139,250,0.3)]"
+              : "hover:bg-white/10 hover:text-[#a78bfa]"
+          }`}
+                >
+                  <div
+                    className={`min-w-[40px] flex justify-center transition-transform
+            ${
+              isActive
+                ? "scale-110 drop-shadow-[0_0_6px_#3b82f6]"
+                : "group-hover/item:scale-110 group-hover/item:drop-shadow-[0_0_5px_#3b82f6]"
+            }`}
+                  >
+                    {item.icon}
+                  </div>
+
+                  <span
+                    className={`ml-4 font-medium whitespace-nowrap transition-all duration-300
+            ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                  >
+                    {item.name}
+                  </span>
+                </li>
+              </Link>
+            );
+          })}
         </ul>
       </nav>
 

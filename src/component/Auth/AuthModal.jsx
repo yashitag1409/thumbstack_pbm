@@ -5,7 +5,7 @@ import Modal from "../Modal/Modal";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
-const AuthModal = ({ isOpen, onClose }) => {
+const AuthModal = ({ isOpen = false, onClose }) => {
   const [view, setView] = useState("login"); // 'login' or 'register'
 
   return (

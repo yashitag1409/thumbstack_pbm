@@ -18,9 +18,11 @@ export default function Unauthorized() {
 
         <button
           onClick={() => router.push("/")}
-          className="rounded-lg bg-secondary px-6 py-3 text-white font-medium transition hover:opacity-90"
+          className="
+          cursor-pointer
+          rounded-lg bg-secondary px-6 py-3 text-white font-medium transition hover:opacity-90"
         >
-          Go to Dashboard
+          Go to Home
         </button>
       </div>
     </div>

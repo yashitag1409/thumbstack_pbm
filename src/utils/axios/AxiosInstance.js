@@ -2,19 +2,12 @@
 
 import axios from "axios";
 import { toast } from "sonner";
-// import BASE_URL from "./baseurl";
-// import { store } from "@/redux/store";
 import { logout } from "../redux/slices/authSlice";
 import { store } from "../redux/store";
 import { TEST_URL } from "../helper/BASE_URL";
-// import { logout } from "@/redux/authSlice";
 
 // 🔥 Router bridge (no separate file)
 let routerPush = null;
-
-export const registerRouter = (pushFn) => {
-  routerPush = pushFn;
-};
 
 export const navigate = (path) => {
   if (routerPush) routerPush(path);
