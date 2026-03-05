@@ -63,8 +63,6 @@ const RegisterForm = ({ onClose, onSetLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Form Data:", formData);
-
     // Manual Validation
     if (
       !formData.name ||
