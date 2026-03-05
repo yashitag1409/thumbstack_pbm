@@ -34,26 +34,23 @@ const RegisterForm = ({ onClose, onSetLogin }) => {
   }, [error]);
 
   // Handle Success Countdown & Auto-close
+  // Countdown timer
   useEffect(() => {
-    let interval;
-    if (success) {
-      interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            onClose?.();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    if (!success) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [success]);
+
+  // Close modal when countdown hits 0
+  useEffect(() => {
+    if (countdown === 0 && success) {
+      onClose?.();
     }
-    return () => {
-      clearInterval(interval);
-      // Reset logic when component unmounts
-      if (!success) setLocalMsg({ msg: "", type: "" });
-    };
-  }, [success, onClose]);
+  }, [countdown, success, onClose]);
 
   // Auto-clear error messages
   useEffect(() => {
@@ -65,6 +62,8 @@ const RegisterForm = ({ onClose, onSetLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    console.log("Form Data:", formData);
 
     // Manual Validation
     if (
