@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "@/utils/redux/slices/authSlice";
-import { toast } from "sonner";
+import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
-const RegisterForm = ({ onClose }) => {
+const RegisterForm = ({ onClose, onSetLogin }) => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
@@ -14,52 +14,77 @@ const RegisterForm = ({ onClose }) => {
     email: "",
     password: "",
     contact: "",
-    countryCode: "",
+    countryCode: "+91",
   });
 
   const [success, setSuccess] = useState(false);
-  const [countdown, setCountdown] = useState(3);
-  // Sample Country Codes
+  const [countdown, setCountdown] = useState(5);
+  const [localMsg, setLocalMsg] = useState({ msg: "", type: "" }); // types: 'error' | 'success'
+
   const countryCodes = [
     { code: "+91", label: "🇮🇳 IND" },
     { code: "+1", label: "🇺🇸 USA" },
     { code: "+44", label: "🇬🇧 UK" },
     { code: "+971", label: "🇦🇪 UAE" },
   ];
-  // 🔥 Countdown effect
+
+  // Sync Redux Errors to Local UI
   useEffect(() => {
+    if (error) setLocalMsg({ msg: error, type: "error" });
+  }, [error]);
+
+  // Handle Success Countdown & Auto-close
+  useEffect(() => {
+    let interval;
     if (success) {
-      const interval = setInterval(() => {
-        setCountdown((prev) => prev - 1);
+      interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            onClose?.();
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
-
-      return () => clearInterval(interval);
     }
-  }, [success]);
+    return () => {
+      clearInterval(interval);
+      // Reset logic when component unmounts
+      if (!success) setLocalMsg({ msg: "", type: "" });
+    };
+  }, [success, onClose]);
 
-  // 🔥 Close modal when timer hits 0
+  // Auto-clear error messages
   useEffect(() => {
-    if (countdown === 0 && success) {
-      onClose?.();
+    if (localMsg.msg && localMsg.type === "error" && !loading) {
+      const timer = setTimeout(() => setLocalMsg({ msg: "", type: "" }), 5000);
+      return () => clearTimeout(timer);
     }
-  }, [countdown, success, onClose]);
+  }, [localMsg, loading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🛡️ Manual Validation Check
+    // Manual Validation
     if (
       !formData.name ||
       !formData.email ||
       !formData.password ||
       !formData.contact
     ) {
-      toast.error("Please fill in all fields.");
+      setLocalMsg({
+        msg: "All fields are required to create a vault.",
+        type: "error",
+      });
       return;
     }
 
-    if (formData.contact.length < 10) {
-      toast.error("Please enter a valid contact number.");
+    if (formData.contact.length !== 10) {
+      setLocalMsg({
+        msg: "Please enter a valid 10-digit contact number.",
+        type: "error",
+      });
       return;
     }
 
@@ -67,46 +92,55 @@ const RegisterForm = ({ onClose }) => {
 
     if (result.meta.requestStatus === "fulfilled") {
       setSuccess(true);
+      setLocalMsg({
+        msg: "Registration successful! Please login to continue.",
+        type: "success",
+      });
     }
   };
 
-  // =========================
-  // SUCCESS SCREEN
-  // =========================
+  // --- Success UI Block ---
   if (success) {
     return (
-      <div className="text-center space-y-4 py-6">
-        <div className="text-green-400 text-lg font-bold">
-          🎉 Account Created Successfully
+      <div className="text-center space-y-6 py-8 animate-in fade-in zoom-in duration-300">
+        <div className="flex justify-center">
+          <div className="p-4 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
+            <CheckCircle2 size={48} />
+          </div>
         </div>
-
-        <p className="text-sm text-muted">
-          Please wait... this modal will automatically close in
-        </p>
-
-        <div className="text-3xl font-bold text-primary animate-pulse">
-          {countdown}
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold text-white">Vault Created!</h2>
+          <p className="text-sm text-muted px-6">
+            Registration successful! Please login to continue. This modal will
+            close automatically.
+          </p>
+        </div>
+        <div className="inline-block px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-2xl tracking-tighter">
+          {countdown}s
         </div>
       </div>
     );
   }
 
-  // =========================
-  // FORM UI
-  // =========================
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Loading Message */}
-      {loading && (
-        <div className="p-2 text-xs text-blue-400 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-          Creating your account... Please wait
-        </div>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <div className="p-2 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg">
-          {error}
+      {/* Status Alert Block */}
+      {(loading || localMsg.msg) && (
+        <div
+          className={`flex items-center gap-3 p-3.5 text-xs font-medium border rounded-xl transition-all duration-300 ${
+            loading
+              ? "text-blue-400 bg-blue-500/10 border-blue-500/20 animate-pulse"
+              : localMsg.type === "success"
+                ? "text-green-400 bg-green-500/10 border-green-500/20"
+                : "text-red-400 bg-red-500/10 border-red-500/20"
+          }`}
+        >
+          {loading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <AlertCircle size={16} />
+          )}
+          {loading ? "Constructing your vault... Please wait" : localMsg.msg}
         </div>
       )}
 
@@ -115,8 +149,7 @@ const RegisterForm = ({ onClose }) => {
         placeholder="Full Name"
         value={formData.name}
         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-        className="w-full bg-background border border-card-border p-3 rounded-xl focus:ring-1 focus:ring-primary outline-none text-sm"
-        // required
+        className="w-full bg-background border border-card-border p-3.5 rounded-xl focus:ring-2 focus:ring-primary/50 outline-none text-sm transition-all shadow-inner"
       />
 
       <input
@@ -124,29 +157,23 @@ const RegisterForm = ({ onClose }) => {
         placeholder="Email Address"
         value={formData.email}
         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-        className="w-full bg-background border border-card-border p-3 rounded-xl focus:ring-1 focus:ring-primary outline-none text-sm"
-        // required
+        className="w-full bg-background border border-card-border p-3.5 rounded-xl focus:ring-2 focus:ring-primary/50 outline-none text-sm transition-all shadow-inner"
       />
-      {/* 📱 Contact Field with Country Code Selection */}
+
       <div className="flex gap-2">
-        <div className="relative">
-          <select
-            value={formData.countryCode}
-            onChange={(e) =>
-              setFormData({ ...formData, countryCode: e.target.value })
-            }
-            className="h-full bg-background border border-card-border p-3 rounded-xl focus:ring-1 focus:ring-primary outline-none text-sm appearance-none cursor-pointer pr-8"
-          >
-            {countryCodes.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.label} ({c.code})
-              </option>
-            ))}
-          </select>
-          {/* <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
-            ▼
-          </div> */}
-        </div>
+        <select
+          value={formData.countryCode}
+          onChange={(e) =>
+            setFormData({ ...formData, countryCode: e.target.value })
+          }
+          className="bg-background border border-card-border p-3 rounded-xl focus:ring-2 focus:ring-primary/50 outline-none text-sm cursor-pointer appearance-none pr-8 relative shadow-inner"
+        >
+          {countryCodes.map((c) => (
+            <option key={c.code} value={c.code} className="bg-[#1a1b1e]">
+              {c.label} ({c.code})
+            </option>
+          ))}
+        </select>
         <input
           type="text"
           placeholder="Contact Number"
@@ -154,10 +181,8 @@ const RegisterForm = ({ onClose }) => {
           onChange={(e) =>
             setFormData({ ...formData, contact: e.target.value })
           }
-          pattern="^[6-9]{1}[0-9]{9}$"
           maxLength={10}
-          minLength={10}
-          className="flex-1 bg-background border border-card-border p-3 rounded-xl focus:ring-1 focus:ring-primary outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="flex-1 bg-background border border-card-border p-3.5 rounded-xl focus:ring-2 focus:ring-primary/50 outline-none text-sm shadow-inner"
         />
       </div>
 
@@ -166,21 +191,28 @@ const RegisterForm = ({ onClose }) => {
         placeholder="Create Password"
         value={formData.password}
         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-        className="w-full bg-background border border-card-border p-3 rounded-xl focus:ring-1 focus:ring-primary outline-none text-sm"
-        // required
+        className="w-full bg-background border border-card-border p-3.5 rounded-xl focus:ring-2 focus:ring-primary/50 outline-none text-sm transition-all shadow-inner"
       />
 
-      <p className="text-[10px] text-muted px-1">
-        By registering, you agree to AksharVault's terms of service and privacy
-        policy.
+      <p className="text-[10px] text-muted px-2 leading-relaxed">
+        By registering, you agree to AksharVault's{" "}
+        <span className="text-primary hover:underline cursor-pointer">
+          Terms of Service
+        </span>{" "}
+        and{" "}
+        <span className="text-primary hover:underline cursor-pointer">
+          Privacy Policy
+        </span>
+        .
       </p>
 
       <button
         type="submit"
         disabled={loading}
-        className="cursor-pointer w-full py-3 bg-gradient-to-r from-primary via-secondary to-accent text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all disabled:opacity-60"
+        className="cursor-pointer w-full py-3.5 bg-gradient-to-r from-primary via-secondary to-accent text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all disabled:opacity-60 flex justify-center items-center gap-2"
       >
-        {loading ? "Please wait..." : "Create My Vault"}
+        {loading ? <Loader2 size={18} className="animate-spin" /> : null}
+        {loading ? "Building Vault..." : "Create My Vault"}
       </button>
     </form>
   );

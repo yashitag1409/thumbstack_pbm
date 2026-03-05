@@ -105,13 +105,13 @@ const LoginForm = ({ onClose }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (message.msg) {
-  //     setTimeout(() => {
-  //       setMessage({ msg: "", title: "" });
-  //     }, 5000);
-  //   }
-  // }, [message.msg]);
+  useEffect(() => {
+    if (message.msg) {
+      setTimeout(() => {
+        setMessage({ msg: "", title: "" });
+      }, 5000);
+    }
+  }, [message.msg]);
 
   // ========================
   // SUCCESS SCREEN

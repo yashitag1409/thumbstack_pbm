@@ -3,29 +3,47 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-const ProtectedPage = ({ children }) => {
+/**
+ * @param {Array} allowedRoles - Array of strings e.g., ["admin", "user"]
+ */
+const ProtectedPage = ({ children, allowedRoles = ["user", "admin"] }) => {
   const { user, isAuthenticated, loading } = useSelector((state) => state.auth);
   const router = useRouter();
 
   useEffect(() => {
-    // Only redirect once loading is finished
-    if (!loading && (!isAuthenticated || !user)) {
-      router.push("/unauthorized");
-    }
-  }, [user, isAuthenticated, loading, router]);
+    if (!loading) {
+      // 1. Check for Authentication
+      if (!isAuthenticated || !user) {
+        router.push("/unauthorized");
+        return;
+      }
 
-  // Loading State: Themed Skeleton
-  if (loading || !isAuthenticated || !user) {
+      // 2. Check for Role Permission (if roles are specified)
+      if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+        toast.error(
+          "Access Denied: You do not have permission for this vault section.",
+        );
+        router.push("/"); // Redirect to home or a specific 403 page
+      }
+    }
+  }, [user, isAuthenticated, loading, router, allowedRoles]);
+
+  // --- Loading State: Themed Skeleton ---
+  if (
+    loading ||
+    !isAuthenticated ||
+    !user ||
+    (allowedRoles.length > 0 && !allowedRoles.includes(user?.role))
+  ) {
     return (
       <div className="p-8 space-y-8 animate-pulse">
-        {/* Header Skeleton */}
         <div className="space-y-3">
           <div className="h-8 w-64 bg-card-border rounded-lg"></div>
           <div className="h-4 w-40 bg-card-border/50 rounded-lg"></div>
         </div>
 
-        {/* Grid Skeleton (Simulating your Sliders) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div
