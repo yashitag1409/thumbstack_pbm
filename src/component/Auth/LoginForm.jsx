@@ -7,7 +7,7 @@ import {
 } from "@/utils/redux/slices/authSlice";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import { resetAuthState } from "@/utils/redux/slices/authSlice";
 const LoginForm = ({ onClose }) => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
@@ -22,7 +22,17 @@ const LoginForm = ({ onClose }) => {
   });
   const [success, setSuccess] = useState(false);
   const [countdown, setCountdown] = useState(10);
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+    setOtp("");
+    setSuccess(false);
+    setCountdown(10);
+    setMessage({ msg: "", title: "" });
+    setLoginMethod("password");
 
+    dispatch(resetAuthState());
+  };
   // ✅ Countdown effect
   useEffect(() => {
     if (success) {
@@ -37,9 +47,16 @@ const LoginForm = ({ onClose }) => {
   // ✅ Close modal when countdown reaches 0
   useEffect(() => {
     if (countdown === 0 && success) {
+      resetForm();
       onClose?.();
     }
   }, [countdown, success, onClose]);
+
+  useEffect(() => {
+    return () => {
+      resetForm();
+    };
+  }, []);
 
   const handleLogin = async () => {
     try {

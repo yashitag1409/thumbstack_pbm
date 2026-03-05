@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "@/utils/redux/slices/authSlice";
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
-
+import { resetAuthState } from "@/utils/redux/slices/authSlice";
 const RegisterForm = ({ onClose, onSetLogin }) => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
@@ -48,6 +48,7 @@ const RegisterForm = ({ onClose, onSetLogin }) => {
   // Close modal when countdown hits 0
   useEffect(() => {
     if (countdown === 0 && success) {
+      resetForm();
       onClose?.();
     }
   }, [countdown, success, onClose]);
@@ -104,11 +105,13 @@ const RegisterForm = ({ onClose, onSetLogin }) => {
       contact: "",
       countryCode: "+91",
     });
+
     setSuccess(false);
     setCountdown(5);
     setLocalMsg({ msg: "", type: "" });
-  };
 
+    dispatch(resetAuthState());
+  };
   useEffect(() => {
     resetForm();
   }, []);
