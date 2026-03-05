@@ -1,7 +1,13 @@
+import Profile from "@/component/Profile/Profile";
+import ProtectedPage from "@/component/ProtectedPage/protectPage";
 import React from "react";
 
 const page = () => {
-  return <div>page</div>;
+  return (
+    <ProtectedPage>
+      <Profile />
+    </ProtectedPage>
+  );
 };
 
 export default page;

@@ -360,7 +360,7 @@ const SectionSlider = ({
 
   return (
     <section className="px-4 md:px-8 w-full overflow-hidden ">
-      <div className="flex items-center justify-between  mb-6">
+      <div className="flex items-center justify-between my-6">
         <SectionHeading title={title} />
 
         <button

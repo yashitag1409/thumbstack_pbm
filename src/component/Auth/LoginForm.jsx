@@ -59,7 +59,7 @@ const LoginForm = ({ onClose }) => {
     } else {
       result = await dispatch(loginViaOtp({ email, otp }));
     }
-
+    console.log("resulkt from login via otp  ", result);
     if (result.meta.requestStatus === "fulfilled") {
       setSuccess(true);
     }

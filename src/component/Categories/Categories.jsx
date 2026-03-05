@@ -215,7 +215,7 @@ const Categories = () => {
 
       <DeleteCategory
         category={modalVisible.data}
-        isOpen={modalVisible.visible}
+        isOpen={modalVisible.visible && modalVisible.type === "delete"}
         onClose={() =>
           setModalVisible({
             visible: false,

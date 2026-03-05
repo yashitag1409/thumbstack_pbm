@@ -6,38 +6,28 @@ import React, { useState } from "react";
 import AuthModal from "../Auth/AuthModal";
 import Sidebar from "../Header/Sidebar";
 import MobileNav from "../Header/MobileNav";
+import { useAuth } from "@/utils/redux/AuthContext";
 
 const HomeWrapper = ({ children }) => {
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-
-  const openAuth = () => setIsAuthOpen(true);
-  const closeAuth = () => setIsAuthOpen(false);
-
-  // We use React.cloneElement to inject the prop into the children (MainPage)
-  const childrenWithProps = React.Children.map(children, (child) => {
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child, { openAuthModal: openAuth });
-    }
-    return child;
-  });
+  const { isAuthOpen, openAuthModal, closeAuthModal } = useAuth();
 
   console.log("isAuthOpen", isAuthOpen);
 
   return (
     <div className="flex h-screen bg-background w-screen overflow-hidden ">
       {/* 1. Navigation with Auth Trigger */}
-      <Sidebar openAuthModal={() => setIsAuthOpen(true)} />
+      <Sidebar openAuthModal={openAuthModal} />
 
       <div className="flex-1 flex flex-col min-w-0 max-w-full overflow-x-hidden ">
-        <main className=" container mx-auto flex-1  pb-10 pt-0  md:py-2  transition-all duration-300">
-          {childrenWithProps}
+        <main className=" container mx-auto flex-1  pb-10 pt-0  md:py-5 md:pb-10  transition-all duration-300">
+          {children}
         </main>
 
-        <MobileNav openAuthModal={() => setIsAuthOpen(true)} />
+        <MobileNav openAuthModal={openAuthModal} />
       </div>
 
       {/* 3. Global Modal */}
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <AuthModal isOpen={isAuthOpen} onClose={closeAuthModal} />
     </div>
   );
 };

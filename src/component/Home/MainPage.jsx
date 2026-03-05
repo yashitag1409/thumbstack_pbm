@@ -11,8 +11,15 @@ import { getAllAuthors } from "@/utils/apis/authorsApi";
 import AddEditBook from "../Books/AddEditBooks";
 import AddEditCategory from "../Categories/AddEditCategory";
 import AddEditAuthor from "../Authors/AddEditAuthor";
+import { useAuth } from "@/utils/redux/AuthContext";
+import DeleteBooks from "../Books/DeleteBooks";
+import DeleteAuthor from "../Authors/DeleteAuthor";
+import DeleteCategory from "../Categories/DeleteCategory";
 
-const MainPage = ({ openAuthModal }) => {
+const MainPage = () => {
+  const { openAuthModal } = useAuth();
+  console.log("MainPage", openAuthModal);
+
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
 
@@ -79,11 +86,21 @@ const MainPage = ({ openAuthModal }) => {
   };
 
   useEffect(() => {
-    fetchAllBooks();
-    fetchAllCategories();
-    fetchAllAuthors();
-    fetchAllFavBooks();
+    if (isAuthenticated && user) {
+      fetchAllBooks();
+      fetchAllCategories();
+      fetchAllAuthors();
+      fetchAllFavBooks();
+    }
   }, []);
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchAllBooks();
+      fetchAllCategories();
+      fetchAllAuthors();
+      fetchAllFavBooks();
+    }
+  }, [isAuthenticated, user]);
 
   if (!isAuthenticated || !user) {
     return (
@@ -116,7 +133,7 @@ const MainPage = ({ openAuthModal }) => {
   }
 
   return (
-    <div className="space-y-12 py-6">
+    <div className="">
       {/* 1. Favorite Books Section */}
       <SectionSlider
         title="Your Favorites"
@@ -317,7 +334,7 @@ const MainPage = ({ openAuthModal }) => {
         }}
         type="add"
         onRefresh={() => {
-          setAllAuthors();
+          fetchAllAuthors();
         }}
         isOpen={modalVisible.visible && modalVisible.type === "add_author"}
       />
@@ -331,10 +348,56 @@ const MainPage = ({ openAuthModal }) => {
           });
         }}
         onRefresh={() => {
-          setAllAuthors();
+          fetchAllAuthors();
         }}
         type="edit"
         isOpen={modalVisible.visible && modalVisible.type === "edit_author"}
+      />
+
+      {/* delete operations on books | authors | categories */}
+
+      <DeleteBooks
+        bookId={modalVisible?.data?._id}
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        onRefresh={() => {
+          fetchAllBooks();
+          fetchAllFavBooks();
+        }}
+        isOpen={modalVisible.visible && modalVisible.type === "delete_book"}
+      />
+      <DeleteAuthor
+        author={modalVisible?.data?._id}
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        onRefresh={() => {
+          fetchAllAuthors();
+        }}
+        isOpen={modalVisible.visible && modalVisible.type === "delete_author"}
+      />
+      <DeleteCategory
+        category={modalVisible?.data}
+        onClose={() => {
+          setModalVisible({
+            visible: false,
+            type: "",
+            data: null,
+          });
+        }}
+        onRefresh={() => {
+          fetchAllCategories();
+        }}
+        isOpen={modalVisible.visible && modalVisible.type === "delete_category"}
       />
     </div>
   );

@@ -67,8 +67,8 @@ export const loginViaOtp = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.post("/auth/login_otp", credentials);
-
-      localStorage.setItem("token", data.token);
+      console.log("data from login via otp", data);
+      localStorage.setItem("token", data.data.token);
 
       return data;
     } catch (error) {
@@ -108,6 +108,27 @@ export const resetPassword = createAsyncThunk(
   },
 );
 
+// 7️⃣ Update Profile
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        "/auth/update-profile",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
+      // Assuming your backend returns { status: "success", data: updatedUser }
+      return data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Profile update failed",
+      );
+    }
+  },
+);
 // ========================
 // INITIAL STATE
 // ========================
@@ -161,6 +182,7 @@ const authSlice = createSlice({
       })
       .addCase(loginViaPassword.fulfilled, (state, action) => {
         state.loading = false;
+        console.log("action.payload", action.payload);
         state.user = action.payload;
         state.token = action.payload.token;
         state.isAuthenticated = true;
@@ -172,9 +194,19 @@ const authSlice = createSlice({
 
       // LOGIN OTP
       .addCase(loginViaOtp.fulfilled, (state, action) => {
+        console.log("action.payload by otp ", action.payload);
         state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.user = action.payload.data;
+        state.token = action.payload.data.token;
+        state.isAuthenticated = true;
+      })
+      // UPDATE PROFILE
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log("action.payload from update profile", action.payload);
+        // Update the user object with the fresh data from the server
+        state.user = action.payload;
+        // Note: We usually don't update the token here unless the backend issues a new one
         state.isAuthenticated = true;
       })
 

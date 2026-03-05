@@ -130,15 +130,11 @@ const BookReader = ({ id }) => {
               onChange={(val) => updateStatus(val)}
             />
           </div>
-
-          <div className="text-xs text-muted whitespace-nowrap">
-            Page {pageIndex + 1} / {pages.length}
-          </div>
         </div>
       )}
 
       {/* CONTENT */}
-      <div className="flex-1 flex items-center justify-center px-6 py-5">
+      <div className="md:flex-1 flex items-center justify-center px-6 py-5">
         {/* LOADING */}
         {status === "loading" && (
           <div className="max-w-xl w-full animate-pulse space-y-4">
@@ -267,7 +263,7 @@ const BookReader = ({ id }) => {
                 )}
               </div>
             </div>
-            <div className="flex md:hidden items-center justify-between w-full max-w-sm mx-auto mb-4 bg-card border border-card-border rounded-xl shadow-lg px-4 py-2">
+            <div className="mt-2  flex md:hidden items-center justify-between w-full max-w-sm mx-auto mb-4 bg-card border border-card-border rounded-xl shadow-lg px-4 py-2">
               <button
                 onClick={prevPage}
                 disabled={pageIndex === 0}
