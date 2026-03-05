@@ -94,6 +94,20 @@ const RegisterForm = ({ onClose, onSetLogin }) => {
         msg: "Registration successful! Please login to continue.",
         type: "success",
       });
+
+      setTimeout(() => {
+        onSetLogin("login");
+      }, 5000);
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        contact: "",
+        countryCode: "+91",
+      });
+    } else if (result.meta.requestStatus === "rejected") {
+      setLocalMsg({ msg: result.payload, type: "error" });
     }
   };
 

@@ -15,7 +15,7 @@ export const navigate = (path) => {
 
 // Create Axios instance
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: TEST_URL,
   headers: { "Content-Type": "application/json" },
 });
 
