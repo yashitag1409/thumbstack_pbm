@@ -96,6 +96,23 @@ const RegisterForm = ({ onClose, onSetLogin }) => {
     }
   };
 
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      contact: "",
+      countryCode: "+91",
+    });
+    setSuccess(false);
+    setCountdown(5);
+    setLocalMsg({ msg: "", type: "" });
+  };
+
+  useEffect(() => {
+    resetForm();
+  }, []);
+
   // --- Success UI Block ---
   if (success) {
     return (
