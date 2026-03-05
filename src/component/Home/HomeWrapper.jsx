@@ -11,7 +11,7 @@ import { useAuth } from "@/utils/redux/AuthContext";
 const HomeWrapper = ({ children }) => {
   const { isAuthOpen, openAuthModal, closeAuthModal } = useAuth();
 
-  console.log("isAuthOpen", isAuthOpen);
+  // console.log("isAuthOpen", isAuthOpen);
 
   return (
     <div className="flex h-screen bg-background w-screen overflow-hidden ">

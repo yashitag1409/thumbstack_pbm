@@ -18,7 +18,6 @@ import DeleteCategory from "../Categories/DeleteCategory";
 
 const MainPage = () => {
   const { openAuthModal } = useAuth();
-  console.log("MainPage", openAuthModal);
 
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);

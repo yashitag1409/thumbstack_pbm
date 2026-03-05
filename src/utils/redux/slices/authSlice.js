@@ -67,7 +67,6 @@ export const loginViaOtp = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.post("/auth/login_otp", credentials);
-      console.log("data from login via otp", data);
       localStorage.setItem("token", data.data.token);
 
       return data;
@@ -182,7 +181,6 @@ const authSlice = createSlice({
       })
       .addCase(loginViaPassword.fulfilled, (state, action) => {
         state.loading = false;
-        console.log("action.payload", action.payload);
         state.user = action.payload;
         state.token = action.payload.token;
         state.isAuthenticated = true;
@@ -194,7 +192,6 @@ const authSlice = createSlice({
 
       // LOGIN OTP
       .addCase(loginViaOtp.fulfilled, (state, action) => {
-        console.log("action.payload by otp ", action.payload);
         state.loading = false;
         state.user = action.payload.data;
         state.token = action.payload.data.token;
@@ -203,7 +200,6 @@ const authSlice = createSlice({
       // UPDATE PROFILE
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.loading = false;
-        console.log("action.payload from update profile", action.payload);
         // Update the user object with the fresh data from the server
         state.user = action.payload;
         // Note: We usually don't update the token here unless the backend issues a new one

@@ -36,7 +36,7 @@ module.exports.getAllBooks = async ({
       },
     });
 
-    console.log("getAllBooks", data);
+    // console.log("getAllBooks", data);
 
     return data;
   } catch (error) {

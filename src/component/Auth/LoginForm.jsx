@@ -61,7 +61,7 @@ const LoginForm = ({ onClose }) => {
         if (!otp) return setMessage({ msg: "OTP is required", type: "error" });
         result = await dispatch(loginViaOtp({ email, otp }));
       }
-      console.log("resulkt from login via otp  ", result);
+      // console.log("resulkt from login via otp  ", result);
       if (result.meta.requestStatus === "fulfilled") {
         setSuccess(true);
       }
@@ -83,19 +83,19 @@ const LoginForm = ({ onClose }) => {
 
       const result = await dispatch(sendOtp(email));
 
-      console.log("resulkt from send otp  ", result);
+      // console.log("resulkt from send otp  ", result);
       if (result.meta.requestStatus === "fulfilled") {
-        console.log(
-          "resulkt from send otp payload need to be true ->  ",
-          result.payload,
-        );
+        // console.log(
+        //   "resulkt from send otp payload need to be true ->  ",
+        //   result.payload,
+        // );
 
         setMessage({ msg: "OTP sent successfully", title: "success" });
       } else if (result.meta.requestStatus === "rejected") {
         setMessage({ msg: result.payload, title: "error" });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       setMessage({ msg: error.message, title: "error" });
     } finally {
