@@ -42,52 +42,76 @@ const LoginForm = ({ onClose }) => {
   }, [countdown, success, onClose]);
 
   const handleLogin = async () => {
-    if (!email) {
-      setMessage({ msg: "Email is required", title: "Error" });
-      return;
-    }
-
-    let result;
-
-    if (loginMethod === "password") {
-      if (!password) {
-        setMessage({ msg: "Password is required", title: "Error" });
+    try {
+      if (!email) {
+        setMessage({ msg: "Email is required", title: "error" });
         return;
       }
 
-      result = await dispatch(loginViaPassword({ email, password }));
-    } else {
-      result = await dispatch(loginViaOtp({ email, otp }));
-    }
-    console.log("resulkt from login via otp  ", result);
-    if (result.meta.requestStatus === "fulfilled") {
-      setSuccess(true);
-    }
+      let result;
 
-    setTimeout(() => {
-      setMessage({ msg: "", title: "" });
-    }, 5000);
-  };
+      if (loginMethod === "password") {
+        if (!password) {
+          setMessage({ msg: "Password is required", title: "error" });
+          return;
+        }
 
-  const handleSendOtp = async () => {
-    if (!email) {
-      setMessage({ msg: "Email is required", title: "Error" });
-      return;
-    }
-    setTimeout(() => {
-      setMessage({ msg: "", title: "" });
-    }, 5000);
-
-    await dispatch(sendOtp(email));
-  };
-
-  useEffect(() => {
-    if (message.msg) {
+        result = await dispatch(loginViaPassword({ email, password }));
+      } else {
+        if (!otp) return setMessage({ msg: "OTP is required", type: "error" });
+        result = await dispatch(loginViaOtp({ email, otp }));
+      }
+      console.log("resulkt from login via otp  ", result);
+      if (result.meta.requestStatus === "fulfilled") {
+        setSuccess(true);
+      }
+    } catch (error) {
+      setMessage({ msg: error.message, title: "error" });
+    } finally {
       setTimeout(() => {
         setMessage({ msg: "", title: "" });
       }, 5000);
     }
-  }, [message.msg]);
+  };
+
+  const handleSendOtp = async () => {
+    try {
+      if (!email) {
+        setMessage({ msg: "Email is required", title: "error" });
+        return;
+      }
+
+      const result = await dispatch(sendOtp(email));
+
+      console.log("resulkt from send otp  ", result);
+      if (result.meta.requestStatus === "fulfilled") {
+        console.log(
+          "resulkt from send otp payload need to be true ->  ",
+          result.payload,
+        );
+
+        setMessage({ msg: "OTP sent successfully", title: "success" });
+      } else if (result.meta.requestStatus === "rejected") {
+        setMessage({ msg: result.payload, title: "error" });
+      }
+    } catch (error) {
+      console.log(error);
+
+      setMessage({ msg: error.message, title: "error" });
+    } finally {
+      setTimeout(() => {
+        setMessage({ msg: "", title: "" });
+      }, 5000);
+    }
+  };
+
+  // useEffect(() => {
+  //   if (message.msg) {
+  //     setTimeout(() => {
+  //       setMessage({ msg: "", title: "" });
+  //     }, 5000);
+  //   }
+  // }, [message.msg]);
 
   // ========================
   // SUCCESS SCREEN
@@ -128,7 +152,18 @@ const LoginForm = ({ onClose }) => {
           {error}
         </div>
       )}
-      {message.msg && (
+      {message.type === "success" && (
+        <div className="p-4 text-xs text-green-400 bg-green-500/10 border border-green-500/30 rounded-lg">
+          {message.msg}
+        </div>
+      )}
+
+      {message.type === "error" && (
+        <div className="p-4 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg">
+          {message.msg}
+        </div>
+      )}
+      {message.type === "failed" && (
         <div className="p-4 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg">
           {message.msg}
         </div>

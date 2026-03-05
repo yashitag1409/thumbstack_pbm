@@ -2,17 +2,28 @@
 
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Camera, User, Mail, Globe, Phone, Save, Loader2 } from "lucide-react";
-// import { updateProfile } from "@/utils/apis/authApi"; // Import your API call
+// Added LogOut icon
+import {
+  Camera,
+  User,
+  Mail,
+  Globe,
+  Phone,
+  Save,
+  Loader2,
+  LogOut,
+} from "lucide-react";
 import { toast } from "sonner";
-import { updateProfile } from "@/utils/redux/slices/authSlice";
+import { updateProfile, logout } from "@/utils/redux/slices/authSlice"; // Import logout action
+import { useRouter } from "next/navigation"; // To redirect after logout
 
 const Profile = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const dispatch = useDispatch();
-  // Schema-aligned form state
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,7 +32,6 @@ const Profile = () => {
     profileImage: null,
   });
 
-  // Sync state when component mounts or user changes
   useEffect(() => {
     if (user) {
       setFormData({
@@ -39,7 +49,7 @@ const Profile = () => {
     const file = e.target.files[0];
     if (file) {
       setFormData((prev) => ({ ...prev, profileImage: file }));
-      setImagePreview(URL.createObjectURL(file)); // Generate local preview
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -47,24 +57,30 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Prepare Multipart/Form-Data for backend
     const data = new FormData();
     data.append("name", formData.name);
     data.append("contact", formData.contact);
     data.append("countryCode", formData.countryCode);
 
-    // Only append image if a new one was selected
     if (formData.profileImage) {
       data.append("profileImage", formData.profileImage);
     }
 
     try {
-      dispatch(updateProfile(data));
+      await dispatch(updateProfile(data)).unwrap();
+      toast.success("Profile updated successfully!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error || "Something went wrong");
     } finally {
       setLoading(false);
     }
+  };
+
+  // --- LOGOUT HANDLER ---
+  const handleLogout = () => {
+    dispatch(logout());
+    toast.success("Logged out successfully");
+    router.push("/"); // Redirect to home/landing page
   };
 
   if (!isAuthenticated)
@@ -74,20 +90,32 @@ const Profile = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4 space-y-8">
-      {/* Header with your custom Gradient Border */}
-      <div className="relative pl-6 flex items-center">
-        <div
-          className="absolute left-0 top-0 bottom-0 w-1.5 rounded-full"
-          style={{ background: "linear-gradient(to bottom, #6366f1, #0ea5e9)" }}
-        />
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-          User Profile
-        </h1>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="relative pl-6 flex items-center">
+          <div
+            className="absolute left-0 top-0 bottom-0 w-1.5 rounded-full"
+            style={{
+              background: "linear-gradient(to bottom, #6366f1, #0ea5e9)",
+            }}
+          />
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            User Profile
+          </h1>
+        </div>
+
+        {/* Desktop Logout Button */}
+        <button
+          onClick={handleLogout}
+          className=" cursor-pointer hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-all font-semibold text-sm active:scale-95"
+        >
+          <LogOut size={18} /> Logout
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
-        {/* Profile Image Section */}
-        <div className="lg:col-span-1">
+        {/* Left Section: Avatar & Role */}
+        <div className="lg:col-span-1 space-y-4">
           <div className="glass border border-card-border rounded-2xl p-8 flex flex-col items-center shadow-lg">
             <div className="relative group">
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-card-border group-hover:border-primary transition-all duration-300 shadow-xl">
@@ -122,18 +150,25 @@ const Profile = () => {
               {user?.role}
             </p>
           </div>
+
+          {/* Mobile Logout Button (Shows only in column on mobile) */}
+          <button
+            onClick={handleLogout}
+            className="md:hidden w-full flex items-center justify-center gap-2 py-3 rounded-2xl border border-red-500/30 text-red-500 bg-red-500/5 font-bold"
+          >
+            <LogOut size={18} /> Logout Session
+          </button>
         </div>
 
-        {/* Form Details Section aligned with userSchema */}
+        {/* Right Section: Form Details */}
         <div className="lg:col-span-2">
           <form
             onSubmit={handleUpdate}
             className="glass border border-card-border rounded-2xl p-6 space-y-6 shadow-lg"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-muted uppercase ml-1 flex items-center gap-2">
+                <label className="text-xs font-bold text-muted uppercase ml-1">
                   Name
                 </label>
                 <input
@@ -146,7 +181,6 @@ const Profile = () => {
                 />
               </div>
 
-              {/* Email (Disabled as per unique constraint in schema) */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-muted uppercase ml-1 opacity-60">
                   Email Address
@@ -159,7 +193,6 @@ const Profile = () => {
                 />
               </div>
 
-              {/* Country Code */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-muted uppercase ml-1">
                   Country Code
@@ -174,7 +207,6 @@ const Profile = () => {
                 />
               </div>
 
-              {/* Contact */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-muted uppercase ml-1">
                   Contact Number
@@ -194,7 +226,7 @@ const Profile = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="cursor-pointer flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary via-secondary to-accent text-white rounded-xl font-bold shadow-lg shadow-primary/20 active:scale-95 transition-all disabled:opacity-60"
+                className="cursor-pointer flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-primary via-secondary to-accent text-white rounded-xl font-bold shadow-lg shadow-primary/20 active:scale-95 transition-all disabled:opacity-60"
               >
                 {loading ? (
                   <Loader2 className="animate-spin" size={18} />

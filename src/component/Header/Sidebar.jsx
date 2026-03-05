@@ -104,30 +104,31 @@ const Sidebar = ({ openAuthModal }) => {
       <div className="p-4 w-full border-t border-gray-800 bg-[#0F1014] group-hover:border-t-[#3b82f6]/30 transition-colors duration-500">
         <div className="flex items-center cursor-pointer group/user">
           <div className="relative shrink-0">
-            <div
-              onClick={() => {
-                if (!isAuthenticated) {
-                  openAuthModal();
-                }
-              }}
-              className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#a78bfa] via-[#3b82f6] to-[#f472b6] flex items-center justify-center text-white border-2 border-transparent group-hover/user:border-white transition-all duration-300 overflow-hidden shadow-lg"
-            >
-              {isAuthenticated && user ? (
-                user.profileImage ? (
-                  <img
-                    src={user.profileImage}
-                    alt="profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-sm font-bold tracking-wider">
-                    {getInitials(user.name)}
-                  </span>
-                )
-              ) : (
+            {/* Navigates to /profile if authenticated, else triggers modal */}
+            {isAuthenticated && user ? (
+              <Link href="/profile">
+                <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#a78bfa] via-[#3b82f6] to-[#f472b6] flex items-center justify-center text-white border-2 border-transparent group-hover/user:border-white transition-all duration-300 overflow-hidden shadow-lg">
+                  {user.profileImage ? (
+                    <img
+                      src={user.profileImage}
+                      alt="profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm font-bold tracking-wider">
+                      {getInitials(user.name)}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ) : (
+              <div
+                onClick={openAuthModal}
+                className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#a78bfa] via-[#3b82f6] to-[#f472b6] flex items-center justify-center text-white border-2 border-transparent group-hover/user:border-white transition-all duration-300 overflow-hidden shadow-lg"
+              >
                 <User size={22} className="text-white/80" />
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Online Dot */}
             {isAuthenticated && (
@@ -137,9 +138,17 @@ const Sidebar = ({ openAuthModal }) => {
 
           {/* Text Section */}
           <div className="ml-4 flex flex-col opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden">
-            <p className="text-sm font-bold text-white tracking-tight">
-              {isAuthenticated ? user?.name : "Guest User"}
-            </p>
+            {isAuthenticated ? (
+              <Link href="/profile">
+                <p className="text-sm font-bold text-white tracking-tight hover:text-[#a78bfa] transition-colors">
+                  {user?.name}
+                </p>
+              </Link>
+            ) : (
+              <p className="text-sm font-bold text-white tracking-tight">
+                Guest User
+              </p>
+            )}
 
             {/* ACTION BUTTON */}
             {!isAuthenticated ? (
@@ -150,12 +159,12 @@ const Sidebar = ({ openAuthModal }) => {
                 Sign In
               </div>
             ) : (
-              <div
+              <button
                 onClick={() => dispatch(logout())}
                 className="text-[11px] font-medium text-red-400 uppercase tracking-widest hover:text-red-500 transition-colors cursor-pointer"
               >
                 Logout
-              </div>
+              </button>
             )}
           </div>
         </div>
