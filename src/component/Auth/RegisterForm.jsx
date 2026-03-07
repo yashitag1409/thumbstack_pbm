@@ -197,11 +197,11 @@ const RegisterForm = ({ onClose, onSetLogin }) => {
           onChange={(e) =>
             setFormData({ ...formData, countryCode: e.target.value })
           }
-          className="bg-background border border-card-border p-3 rounded-xl focus:ring-2 focus:ring-primary/50 outline-none text-sm cursor-pointer appearance-none pr-8 relative shadow-inner"
+          className=" text-center bg-background border border-card-border p-3 rounded-xl focus:ring-2 focus:ring-primary/50 outline-none text-sm cursor-pointer appearance-none pr-8 relative shadow-inner"
         >
           {countryCodes.map((c) => (
             <option key={c.code} value={c.code} className="bg-[#1a1b1e]">
-              {c.label} ({c.code})
+              {c.code}
             </option>
           ))}
         </select>
